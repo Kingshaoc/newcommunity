@@ -6,6 +6,9 @@
         <sql id="selectFields">
             id,user_id,title,content,type,status,create_time,comment_count,score
         </sql>
+        <sql id="insertFields">
+           user_id,title,content,type,status,create_time,comment_count,score
+        </sql>
 
         <select id="selectDiscussPost" resultType="DiscussPost">
             select <include refid="selectFields"></include>
@@ -14,7 +17,13 @@
             <if test="userId!=0">
                 and user_id=#{userId}
             </if>
-            order by type desc,create_time desc
+            <if test="orderMode==0">
+                order by type desc,create_time desc
+            </if>
+            <if test="orderMode==1">
+                order by type desc,score desc,create_time desc
+            </if>
+
             limit #{offset},#{limit}
         </select>
 
@@ -28,5 +37,33 @@
             </if>
 
         </select>
+
+    <insert id="insertDiscussPost" parameterType="DiscussPost" keyProperty="id">
+        insert into discuss_post(<include refid="insertFields"></include>)
+        values(#{userId},#{title},#{content},#{type},#{status},#{createTime},#{commentCount},#{score})
+    </insert>
+
+    <select id="selectDiscussPostById" resultType="DiscussPost">
+        select <include refid="selectFields"></include>
+        from discuss_post
+        where id=#{id}
+    </select>
+
+
+    <update id="updateCommentCount">
+        update discuss_post set comment_count=#{commentCount} where id=#{id}
+    </update>
+
+    <update id="updateType">
+        update discuss_post set  type=#{type} where id=#{id}
+    </update>
+
+    <update id="updateStatus">
+          update discuss_post set status=#{status} where id=#{id}
+    </update>
+
+    <update id="updateScore">
+          update discuss_post set score=#{score} where id=#{id}
+    </update>
 
 </mapper>

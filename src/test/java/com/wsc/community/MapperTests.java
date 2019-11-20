@@ -2,8 +2,10 @@ package com.wsc.community;
 
 import com.wsc.community.CommuntiyApplication;
 import com.wsc.community.dao.DiscussPostMapper;
+import com.wsc.community.dao.LoginTicketMapper;
 import com.wsc.community.dao.UserMapper;
 import com.wsc.community.entity.DiscussPost;
+import com.wsc.community.entity.LoginTicket;
 import com.wsc.community.entity.User;
 
 import org.junit.Test;
@@ -25,6 +27,8 @@ public class MapperTests {
     private UserMapper userMapper;
     @Autowired
     private DiscussPostMapper discussPostMapper;
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
 
     @Test
     public void testSelectUser() {
@@ -67,15 +71,38 @@ public class MapperTests {
 
     @Test
     public void selectPosts(){
-        List<DiscussPost> list = discussPostMapper.selectDiscussPost(149, 0, 10);
+        List<DiscussPost> list = discussPostMapper.selectDiscussPost(149, 0, 10,0);
         for(DiscussPost discussPost:list){
             System.out.println(discussPost);
         }
 
         int rows=discussPostMapper.selectDiscussPostRows(0);
         System.out.println(rows);
+    }
+
+    @Test
+    public void testInsertLoginTicket(){
+        LoginTicket loginTicket=new LoginTicket();
+        loginTicket.setUserId(101);
+        loginTicket.setExpired(new Date(System.currentTimeMillis()+1000*60*10));
+        loginTicket.setStatus(0);
+        loginTicket.setTicket("abc");
+        loginTicketMapper.insertLoginTicket(loginTicket);
+    }
+
+    @Test
+    public void testSelectAndUpdate(){
+
+        LoginTicket loginTicket = loginTicketMapper.selectByTicket("abc");
+        System.out.println(loginTicket);
+
+        loginTicketMapper.updateStatus("abc",1);
+        loginTicket = loginTicketMapper.selectByTicket("abc");
+        System.out.println(loginTicket);
 
 
     }
+
+
 
 }
